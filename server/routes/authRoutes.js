@@ -10,7 +10,7 @@ const send = (res, u, code = 200) => res.status(code).json({
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) return res.status(400).json({ message: "Name, email and password are required." });
-  if (password.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters." });
+  if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password)) return res.status(400).json({ message: "Password needs 8+ characters with uppercase, lowercase, a number and a symbol." });
   if (await User.findOne({ email: email.toLowerCase() })) return res.status(409).json({ message: "This email is already registered." });
   send(res, await User.create({ name, email, password: await bcrypt.hash(password, 10) }), 201);
 });
